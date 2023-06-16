@@ -1,10 +1,18 @@
 const express = require("express");
 const env = require("dotenv");
+const studentRoute = require("./router/studentRoute");
+const sessionRoute = require("./router/sessionRoute");
+require("./database/connect")
 
 env.config();
 const app = express();
+app.use(express.json());
 const PORT = process.env.PORT;
 
-app.listen(PORT, (req, res)=>{
-    res.status(200).send(`Server started on ${PORT}`);
+//router
+app.use("/student", studentRoute);
+app.use("/sessions", sessionRoute);
+
+app.listen(PORT, ()=>{
+    console.log(`Server started on ${PORT}`);
 })
