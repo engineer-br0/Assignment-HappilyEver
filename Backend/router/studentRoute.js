@@ -14,7 +14,7 @@ studentRoute.post("/login", async (req, res)=>{
     const token = uuid.v4();   // uuid generated token
     user.token = token;
     user.save();
-    res.status(200).send({"token": token})
+    res.status(200).send({"token": token, profile: user})
     }
     catch(err){
         res.status(400).send({"error": err});

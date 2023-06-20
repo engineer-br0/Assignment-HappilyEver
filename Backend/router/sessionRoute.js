@@ -6,12 +6,12 @@ const usersCollection = require("../models/userSchema");
 const sessionRoute = express.Router();
 
 sessionRoute.post("/create", async (req, res)=>{
-    
     try{
     const {startDate, endDate} = req.body;
     const end = new Date(endDate)
     console.log(endDate);
-    const dean = await mongoose.connection.collection("dean").findOne({});
+    const dean = await deanCollection.findOne({});
+    console.log(dean);
     if(dean) console.log(dean._id);
     for(let date = new Date(startDate); date<= end; date.setDate(date.getDate()+1)){
         
@@ -41,32 +41,46 @@ sessionRoute.post("/create", async (req, res)=>{
     }
 });
 
-sessionRoute.get("/", async (req, res)=>{
+sessionRoute.get("/free", async (req, res)=>{
     try{
         const sessions = await sessionCollection.find({isBooked: false});
-        sessions.map((item, index)=>{
-            console.log(item.startTime);
-        })
-        
+        let sessionArray = [];
+await Promise.all(
+  sessions.map(async (item, index) => {
+    let dean = await deanCollection.findOne({ _id: item.dean });
+    sessionArray.push({ time: item.startTime, dean: dean.name });
+  })
+);
+  res.status(200).send({"free seesions": sessionArray})      
     }
     catch(err){
+        console.log(err);
         res.status(400).send(err);
     }
 });
 
 sessionRoute.post("/booking", async (req, res) =>{
     try{
-        const date = req.body.date;
+        const date = req.body.startDate;
         const slot = new Date(date);
         slot.setHours(10,0,0);
         let session = await sessionCollection.findOne({startTime: slot});
         console.log(session);
         session.isBooked = true;
         session.save();
-        res.json("Booking done");
+        //const dean = await mongoose.connection.collection("deans").findOne({ _id: session.dean });
+        const dean = await deanCollection.findOne({_id: session.dean});
+        const student = await usersCollection.findOne({id: req.body.id});
+        student.sessions = [];
+        student.sessions.push({session_time: slot, dean: dean.name});
+        dean.sessions.push({session_time: slot, student: student.id})
+        dean.save();
+        student.save()
+        res.send("Booking done");
     }
     catch(err){
-        res.send(err);
+        console.log(err);
+        res.send("err");
     }
 })
 

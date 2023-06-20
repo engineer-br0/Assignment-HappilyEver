@@ -12,8 +12,19 @@ const deanSchema = mongoose.Schema({
     name:{
         type: String,
         required : true
+    },
+    sessions:[{
+        session_time:{
+            type: String,
+            required: true
+        },
+        student:{
+            type: String,
+            required: true
+        }
     }
+    ]
 })
 
-const deanCollection = mongoose.model("dean", deanSchema);
+const deanCollection = mongoose.model("deans", deanSchema);
 module.exports = deanCollection;

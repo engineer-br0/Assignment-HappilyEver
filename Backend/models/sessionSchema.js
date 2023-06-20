@@ -16,9 +16,11 @@ const sessionSchema = mongoose.Schema({
     },
     dean: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "users"
-    }
+        ref: "dean",
+        required: true
+    },
 });
+
 
 const sessionCollection = mongoose.model("sessions", sessionSchema);
 

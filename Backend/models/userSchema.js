@@ -8,7 +8,18 @@ const userSchema = mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    sessions:[{
+        session_time:{
+            type: String,
+            required: true
+        },
+        dean:{
+            type: String,
+            required: true
+        }
     }
+    ]
 })
 
 const usersCollection = mongoose.model("users", userSchema);
